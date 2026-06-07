@@ -2,11 +2,17 @@
 
 An enterprise-ready, multi-tenant B2B administration dashboard built with React, TypeScript, Tailwind CSS, and Supabase. This application securely isolates tenant resources, leverages relational PostgreSQL database constraints, enforces strict Row Level Security (RLS) filters, and offloads sensitive logic to a serverless Deno Edge Function.
 
-## 🚀 Live Production URL
+## Live Production & Preview URLs
 
-* **Live Deployment:** [INSERT YOUR VERCEL DEPLOYMENT URL HERE AFTER HOSTING]
+* **Live Deployment - main:** [https://admin-dashboard-51zmvidxz-bilal-shaikh-s-projects1.vercel.app]
+* **Live Deployment - development:** [https://admin-dashboard-i0xjm6wwf-bilal-shaikh-s-projects1.vercel.app]
 
-## 🛠️ Architecture & Technical Decisions
+## Test Credentials
+
+* **Email:** test@yahoo.com
+* **Password:** abcd1234
+
+## Architecture & Technical Decisions
 
 ### 1. Multi-Branch Git Pipeline Strategy
 
@@ -34,7 +40,7 @@ To ensure zero friction during feature expansion and maintain maximum production
 
 ---
 
-## 📦 Local Installation & Setup
+## Local Installation & Setup
 
 ### Prerequisites
 
