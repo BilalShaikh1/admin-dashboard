@@ -47,7 +47,7 @@ export default function OrgDirectory({ onSelectOrg }: { onSelectOrg: (id: string
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800/60 text-sm text-slate-300">
-          {orgs?.map((org) => (
+          {orgs?.map((org: any) => (
             <tr 
               key={org.id} 
               onClick={() => onSelectOrg(org.id)}

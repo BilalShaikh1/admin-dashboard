@@ -81,7 +81,7 @@ export default function OrgDetails({ orgId, onBack }: OrgDetailsProps) {
 
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
+      <button onClick={onBack} className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer bg-transparent border-none">
         ← Return to Registry Directory
       </button>
 
@@ -109,7 +109,7 @@ export default function OrgDetails({ orgId, onBack }: OrgDetailsProps) {
               <div className="p-8 text-center text-sm text-slate-500">No active members found. Use the invitation frame to add teammates.</div>
             ) : (
               <div className="divide-y divide-slate-800/50">
-                {members?.map((member) => (
+                {members?.map((member: any) => (
                   <div key={member.id} className="p-4 flex items-center justify-between text-sm hover:bg-slate-900/30 transition-colors">
                     <span className="text-slate-200 font-medium">{member.email}</span>
                     <div className="flex items-center space-x-3 text-xs">
