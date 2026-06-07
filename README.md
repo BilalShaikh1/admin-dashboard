@@ -1,75 +1,93 @@
-# React + TypeScript + Vite
+# Multi-Tenant Organization Administrator Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An enterprise-ready, multi-tenant B2B administration dashboard built with React, TypeScript, Tailwind CSS, and Supabase. This application securely isolates tenant resources, leverages relational PostgreSQL database constraints, enforces strict Row Level Security (RLS) filters, and offloads sensitive logic to a serverless Deno Edge Function.
 
-Currently, two official plugins are available:
+## 🚀 Live Production URL
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **Live Deployment:** [INSERT YOUR VERCEL DEPLOYMENT URL HERE AFTER HOSTING]
 
-## React Compiler
+## 🛠️ Architecture & Technical Decisions
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### 1. Multi-Branch Git Pipeline Strategy
 
-Note: This will impact Vite dev & build performances.
+To ensure zero friction during feature expansion and maintain maximum production stability, this repository follows a rigorous, production-grade branching lifecycle:
 
-## Expanding the ESLint configuration
+* `main`: Reflects the absolute stable, verified production-ready state.
+* `development`: Serves as the primary integration and staging branch where all feature aggregates are compiled.
+* `feature/*`: Granular, isolated branches dedicated to specific tracking milestones (`auth-setup`, `tenant-onboarding`, `member-invitations`), preventing code overlaps and enabling concise pull request peer reviews.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2. Multi-Tenant Database Architecture & Security
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **Data Isolation (RLS):** Row Level Security policies are explicitly enabled on all relational tables. Tenant data is filtered at the database level by binding transactions directly to authenticated sessions (`auth.uid()`). Admins can only read or write records within organizations they explicitly constructed.
+* **Custom Extensibility:** Implements a polymorphic metadata system (`type_specific_field`) that dynamically captures unique context parameters based on tenant classifications (`Enterprise`, `SMB`, etc.).
+* **Idempotency & Guardrails:** Employs a PostgreSQL `UNIQUE` index constraint across (`organization_id`, `email`) in the roster mappings. This forces transaction atomicity and guarantees duplicate invitations are cleanly caught and rejected.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 3. Serverless Edge Computing Strategy
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+* **Privileged Access Control:** Member invitations are intentionally decoupled from standard client-side writes. Instead, they hit a server-side **Supabase Deno Edge Function**.
+* This function decrypts user JWT claims, performs an authoritative organization ownership audit, and runs the data injection using a high-privilege administrative service role. This layout isolates server-side state logic and provides a clear hook for transactional email delivery systems (e.g., Resend, Postmark).
+
+### 4. Client State Optimizations
+
+* **TanStack React Query:** Leverages background revalidation and immediate cache-invalidation rings. When an invitation completes, the roster cache is instantly purged, forcing an instantaneous, zero-reload UI paint.
+* **Form Submissions:** Powered by `React Hook Form` and `Zod` validation schemas to enforce clean UX styling boundaries and unified authentication inputs before hitting the network layer.
+
+---
+
+## 📦 Local Installation & Setup
+
+### Prerequisites
+
+* Node.js (v18 or higher)
+* NPM or PNPM
+* Supabase CLI (for modifying Edge Workers)
+
+### Step-by-Step Guide
+
+1. **Clone the Repository:**
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **Install Project Dependencies:**
+```bash
+npm install
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+
+
+3. **Configure Environment Parameters:**
+Duplicate the provided configuration template:
+```bash
+cp .env.example .env
+
+```
+
+
+Open the newly created `.env` file and populate it with your active Supabase Project parameters (`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`).
+4. **Initialize Database Schema:**
+Copy the contents of your `supabase_migration.sql` file, open your **Supabase Dashboard > SQL Editor**, paste the script, and press **Run** to generate the relational layout, indexes, and RLS policies.
+5. **Fire Up the Local Development Server:**
+```bash
+npm run dev
+
+```
+
+
+Open `http://localhost:5173` in your browser to view the application.
+
+---
+
+## 📡 Edge Function Deployment Commands
+
+If you make changes to the serverless invitation logic, redeploy using the Supabase CLI:
+
+```bash
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_ID
+npx supabase functions deploy invite-member
+
 ```
