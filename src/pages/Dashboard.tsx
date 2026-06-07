@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import OrgDirectory from '../components/OrgDirectory';
+import OrgDetails from '../components/OrgDetails';
 import CreateOrgForm from '../components/CreateOrgForm';
 
 interface DashboardProps {
@@ -73,22 +74,15 @@ export default function Dashboard({ session }: DashboardProps) {
         </header>
 
         <div className="p-8 max-w-5xl w-full space-y-6">
-          {selectedOrgId ? (
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-              <button onClick={() => setSelectedOrgId(null)} className="text-xs text-emerald-400 hover:underline mb-4 block">← Back to Directory</button>
-              <h3 className="text-lg font-bold text-white mb-2">Organization Detail View</h3>
-              <p className="text-sm text-slate-400">Selected Org ID Token: <span className="font-mono text-emerald-400">{selectedOrgId}</span></p>
-              <div className="mt-6 p-4 border border-dashed border-slate-700 rounded-lg text-sm text-slate-500">
-                Milestone 3 Core Placeholder: Member lists and Deno Cloud Edge Function Invitation interfaces will embed here.
-              </div>
-            </div>
-          ) : (
-            <>
-              {activeTab === 'directory' && <OrgDirectory onSelectOrg={(id) => setSelectedOrgId(id)} />}
-              {activeTab === 'create' && <CreateOrgForm setActiveTab={setActiveTab} />}
-            </>
-          )}
-        </div>
+  {selectedOrgId ? (
+    <OrgDetails orgId={selectedOrgId} onBack={() => setSelectedOrgId(null)} />
+  ) : (
+    <>
+      {activeTab === 'directory' && <OrgDirectory onSelectOrg={(id) => setSelectedOrgId(id)} />}
+      {activeTab === 'create' && <CreateOrgForm setActiveTab={setActiveTab} />}
+    </>
+  )}
+</div>
       </main>
 
     </div>
