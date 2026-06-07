@@ -1,11 +1,9 @@
-function App() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900">
-      <h1 className="text-4xl font-bold text-emerald-400 tracking-tight">
-        Tailwind is fully working! 🚀
-      </h1>
-    </div>
-  )
-}
+import SignUp from './pages/SignUp';
 
-export default App
+export default function App() {
+  return (
+    <>
+      <SignUp />
+    </>
+  );
+}
